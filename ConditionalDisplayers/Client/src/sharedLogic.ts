@@ -1,37 +1,71 @@
-export const toggleElements = (aliases: string, isShow: boolean, hostElement: HTMLElement) => {
+export type TargetScope = 'self' | 'parent';
+
+type TargetType = 'property' | 'section';
+
+type ConditionalTarget = {
+    scope: TargetScope;
+    type: TargetType;
+    value: string;
+};
+
+const parentPrefix = 'parent:';
+
+const parseTargets = (aliases: string): ConditionalTarget[] => {
     if (!aliases) {
+        return [];
+    }
+
+    return aliases
+        .split(',')
+        .map((x) => x.trim())
+        .filter((x) => !!x)
+        .map((raw) => {
+            const isParent = raw.toLowerCase().startsWith(parentPrefix);
+            const value = isParent ? raw.substring(parentPrefix.length).trim() : raw;
+
+            return {
+                scope: isParent ? 'parent' : 'self',
+                type: isSectionTarget(value) ? 'section' : 'property',
+                value,
+            } satisfies ConditionalTarget;
+        })
+        .filter((x) => !!x.value);
+};
+
+const isSectionTarget = (value: string): boolean => {
+    return value.startsWith('tab-') || value.startsWith('tab-content-') || value.startsWith('group-');
+};
+
+const toSelector = (target: ConditionalTarget): string => {
+    if (target.type === 'section') {
+        return `[data-element="${target.value}"]`;
+    }
+
+    return `umb-property[data-mark="property:${target.value}"]`;
+};
+
+export const toggleElements = (
+    aliases: string,
+    isShow: boolean,
+    hostElement: HTMLElement,
+    scope: TargetScope = 'self'
+) => {
+    const targets = parseTargets(aliases).filter((x) => x.scope === scope);
+
+    if (targets.length === 0) {
         return;
     }
 
-    //Elements to hide
-    const aliasList = aliases.split(',');
+    const cssSelector = targets.map((x) => toSelector(x)).join(',');
+    const elements = deepQuerySelectAll(cssSelector, hostElement, false);
 
-    if (aliasList && aliasList.length > 0) {
-        const cssSelector = elSelectors(aliasList);
-        const elements = deepQuerySelectAll(cssSelector, hostElement, false);
-        elements.forEach((el) => {
-            if (isShow) {
-                el.style.removeProperty('display');
-            } else {
-                el.style.display = 'none';
-            }
-            // TODO: update css to animate?
-        });
-    }
-}
-
-const elSelectors = (aliasList: string[]): string => {
-    let cssSelector = "";
-
-    for (let i = 0; i < aliasList.length; i++) {
-        if (cssSelector !== "") {
-            cssSelector += ",";
+    elements.forEach((el) => {
+        if (isShow) {
+            el.style.removeProperty('display');
+        } else {
+            el.style.display = 'none';
         }
-        const alias = aliasList[i].trim();
-        cssSelector += `umb-property[data-mark="property:${alias}"]`;;
-    }
-
-    return cssSelector;
+    });
 }
 
 /**
