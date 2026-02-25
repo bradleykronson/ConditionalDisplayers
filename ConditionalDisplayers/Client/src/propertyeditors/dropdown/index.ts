@@ -55,6 +55,10 @@ export class CdDropDownFlexibleElement extends CdElement {
     }
 
     protected override initDefaults() {
+        if (this.availableValues.length === 0) {
+            return;
+        }
+
         if (this.value) {
             this.selectedValue = this.value;
         } else {
@@ -62,7 +66,7 @@ export class CdDropDownFlexibleElement extends CdElement {
                 ? this.configDefaultValue
                 : (() => {
                     console.warn("configuration is missing a valid default value");
-                    return this.availableValues[0].value;
+                    return this.availableValues[0].key;
                 })();
         }
     }

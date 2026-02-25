@@ -45,3 +45,17 @@ Similar to what we usually do with properties, we will just need to include thos
 Essentially you can target Properties, Tabs, Content Groups and Group Panels together. You just need to plan out what you're hiding and showing at the same time.
 
 > ⚠️ **IMPORTANT:** Just be careful you don't hide any element that contains the Conditional Displayer that targets it, otherwise you will have to reconfigure it to make its group or tab visible again and you may end up in a confusing mess.
+
+
+## Parent node targeting
+
+You can scope any target to the **parent node** by prefixing it with `parent:`.
+
+Examples:
+- `parent:seoTitle` (parent property alias)
+- `parent:tab-mainTab` (parent tab)
+- `parent:tab-content-mainTab` (parent tab content group)
+- `parent:group-mainTab/mainTabGroup` (parent group panel)
+
+You can also mix local and parent targets in the same setting, e.g.:
+- `heroTitle,parent:seoTitle,parent:tab-mainTab`

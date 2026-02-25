@@ -12,13 +12,13 @@ export const cdCheckboxPropertyInfo = {
     },
     showIfChecked: {
         label: "Show if checked",
-        description: "Aliases of the properties to show when the checkbox is checked.<br />*Multiple aliases must be comma separated.*",
+        description: "Targets to show when checked. Supports property aliases, section keys (tab-..., tab-content-..., group-...) and parent scope with parent:.<br />*Multiple targets must be comma separated.*",
         alias: "showIfChecked",
         propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
     },
     showIfUnchecked: {
         label: "Show if unchecked",
-        description: "Aliases of the properties to show when the checkbox is unchecked.<br />*Multiple aliases must be comma separated.*",
+        description: "Targets to show when unchecked. Supports property aliases, section keys (tab-..., tab-content-..., group-...) and parent scope with parent:.<br />*Multiple targets must be comma separated.*",
         alias: "showIfUnchecked",
         propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
     },
@@ -45,7 +45,7 @@ export const cdCheckboxPropertyInfo = {
 export const cdRadioPropertyInfo = {
     items: {
         label: "Add prevalue",
-        description: "Add, remove or sort values for the conditional list.<br />*Multiple aliases must be comma separated.*",
+        description: "Add, remove or sort values for the conditional list.<br />Use aliases/sections in Show/Hide, prefix with parent: to target parent node sections/properties.<br />*Multiple targets must be comma separated.*",
         alias: "items",
         propertyEditorUiAlias: "Our.Umbraco.CdMultivalues",
     },
@@ -84,7 +84,7 @@ export const cdRadioPropertyInfo = {
 export const cdDropdownFlexiblePropertyInfo = {
     items: {
         label: "Add prevalue",
-        description: "Add, remove or sort values for the conditional list.<br />*Multiple aliases must be comma separated.*",
+        description: "Add, remove or sort values for the conditional list.<br />Use aliases/sections in Show/Hide, prefix with parent: to target parent node sections/properties.<br />*Multiple targets must be comma separated.*",
         alias: "items",
         propertyEditorUiAlias: "Our.Umbraco.CdMultivalues",
     },

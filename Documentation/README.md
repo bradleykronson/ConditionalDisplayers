@@ -62,3 +62,9 @@ You can access to the backoffice of all the site with the following credentials:
 
 **Username**: `admin@admin.com`\
 **Password**: `Password123`
+
+## Parent node targets
+
+Conditional target fields now support `parent:` scope in addition to local aliases.
+
+Use `parent:<target>` to toggle parent node properties or sections. Section targets still use data-element keys (`tab-...`, `tab-content-...`, `group-...`).

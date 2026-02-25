@@ -158,10 +158,10 @@ export class CdMultivaluesElement extends UmbLitElement implements UmbPropertyEd
                         <uui-input name="key" type="text" style="width: 100%;" .value=${this.liveItem.key}></uui-input>
                     </uui-table-cell>
                     <uui-table-cell>
-                        <uui-input name="show" type="text"  style="width: 100%;" placeholder="Properties' aliases" .value=${this.liveItem.show}></uui-input>
+                        <uui-input name="show" type="text"  style="width: 100%;" placeholder="Targets (alias or parent:alias / tab-... / parent:tab-...)" .value=${this.liveItem.show}></uui-input>
                     </uui-table-cell>
                     <uui-table-cell>
-                        <uui-input name="hide" type="text"  style="width: 100%;" placeholder="Properties' aliases" .value=${this.liveItem.hide}></uui-input>
+                        <uui-input name="hide" type="text"  style="width: 100%;" placeholder="Targets (alias or parent:alias / tab-... / parent:tab-...)" .value=${this.liveItem.hide}></uui-input>
                     </uui-table-cell>
                     <uui-table-cell>
                         <uui-button label="Add" @click=${this.#onAdd} compact="compact" look="secondary" title="Add new item"><uui-icon name="icon-badge-add"></uui-icon> Add</uui-button>
@@ -176,10 +176,10 @@ export class CdMultivaluesElement extends UmbLitElement implements UmbPropertyEd
                         <uui-input name="key" type="text" style="width: 100%;" .value=${x.key} ></uui-input>
                     </uui-table-cell>
                     <uui-table-cell>
-                        <uui-input name="show" type="text" style="width: 100%;" placeholder="Properties' aliases" .value=${x.show}></uui-input>
+                        <uui-input name="show" type="text" style="width: 100%;" placeholder="Targets (alias or parent:alias / tab-... / parent:tab-...)" .value=${x.show}></uui-input>
                     </uui-table-cell>
                     <uui-table-cell>
-                        <uui-input name="hide" type="text" style="width: 100%;" placeholder="Properties' aliases" .value=${x.hide}></uui-input>
+                        <uui-input name="hide" type="text" style="width: 100%;" placeholder="Targets (alias or parent:alias / tab-... / parent:tab-...)" .value=${x.hide}></uui-input>
                     </uui-table-cell>
                     <uui-table-cell>
                         <uui-button label="Remove" @click=${this.#onRemove} compact="compact" look="secondary" color="danger" title="Remove item"><uui-icon name="icon-trash"></uui-icon> Remove</uui-button>
