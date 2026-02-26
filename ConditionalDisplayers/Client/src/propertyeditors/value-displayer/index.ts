@@ -11,6 +11,8 @@ export const elementName = `${tagPrefix}-value-displayer`;
 @customElement(elementName)
 export class CdValueDisplayerElement extends CdElement {
     private readonly onDocumentChange = () => this.runDisplayLogic();
+    private runToken = 0;
+
     @property({ type: String, attribute: false })
     public value?: string;
 
@@ -27,6 +29,9 @@ export class CdValueDisplayerElement extends CdElement {
     @state()
     private configParentPropertyAlias?: string;
 
+    @state()
+    private resolvedSourceValueText = "";
+
     protected override bootstrap() {
         document.addEventListener("change", this.onDocumentChange, true);
         document.addEventListener("input", this.onDocumentChange, true);
@@ -38,7 +43,20 @@ export class CdValueDisplayerElement extends CdElement {
     }
 
     protected override runDisplayLogic() {
-        const sourceValue = this.getSourceValue();
+        void this.runDisplayLogicAsync();
+    }
+
+    private async runDisplayLogicAsync() {
+        const token = ++this.runToken;
+        const sourceValue = await this.getSourceValue();
+
+        if (token !== this.runToken) {
+            return;
+        }
+
+        this.resolvedSourceValueText = sourceValue === undefined || sourceValue === null
+            ? "(not found)"
+            : String(sourceValue);
 
         if (sourceValue === undefined || sourceValue === null) {
             return;
@@ -55,9 +73,14 @@ export class CdValueDisplayerElement extends CdElement {
         }
     }
 
-    private getSourceValue(): unknown {
+    private async getSourceValue(): Promise<unknown> {
         if (this.configParentPropertyAlias) {
-            return this.getParentPropertyValue(this.configParentPropertyAlias);
+            const localParentValue = this.getParentPropertyValue(this.configParentPropertyAlias);
+            if (localParentValue !== undefined && localParentValue !== null) {
+                return localParentValue;
+            }
+
+            return await this.getParentNodePropertyValue(this.configParentPropertyAlias);
         }
 
         if (!this.configSourcePropertyAlias) {
@@ -82,6 +105,10 @@ export class CdValueDisplayerElement extends CdElement {
     }
 
     render() {
+        if (this.configParentPropertyAlias) {
+            return html`<small>Parent value (${this.configParentPropertyAlias}): ${this.resolvedSourceValueText}</small>`;
+        }
+
         return html``;
     }
 }

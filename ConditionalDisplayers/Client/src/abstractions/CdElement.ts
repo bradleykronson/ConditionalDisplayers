@@ -3,9 +3,11 @@ import { LitElement, PropertyValues } from "lit";
 import { deepQuerySelectAll, toggleElements } from "../sharedLogic";
 import style from '../cd.css';
 import { UMB_PROPERTY_DATASET_CONTEXT } from "@umbraco-cms/backoffice/property";
+import { UMB_DOCUMENT_WORKSPACE_CONTEXT, UmbDocumentDetailRepository, UmbDocumentItemRepository } from "@umbraco-cms/backoffice/document";
 
 export abstract class CdElement extends UmbElementMixin(LitElement) {
     protected datasetHostElement?: HTMLElement;
+    private documentWorkspaceContext?: { getUnique: () => string | null | undefined };
 
     constructor() {
         super();
@@ -13,6 +15,10 @@ export abstract class CdElement extends UmbElementMixin(LitElement) {
         this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, (instance) => {
             // @ts-ignore - 'getHostElement' not in TS definition yet
             this.datasetHostElement = instance.getHostElement() as HTMLElement;
+        });
+
+        this.consumeContext(UMB_DOCUMENT_WORKSPACE_CONTEXT, (instance) => {
+            this.documentWorkspaceContext = instance;
         });
     }
 
@@ -34,12 +40,10 @@ export abstract class CdElement extends UmbElementMixin(LitElement) {
     protected abstract initDefaults(): void;
 
     protected displayProps(showAliases: string, hideAliases: string) {
-        if (!this.datasetHostElement) {
-            return;
-        }
+        const hostElement = this.datasetHostElement ?? document.body;
 
-        toggleElements(showAliases, true, this.datasetHostElement);
-        toggleElements(hideAliases, false, this.datasetHostElement);
+        toggleElements(showAliases, true, hostElement);
+        toggleElements(hideAliases, false, hostElement);
     }
 
     protected getParentPropertyValue(parentPropertyAlias?: string): unknown {
@@ -53,6 +57,37 @@ export abstract class CdElement extends UmbElementMixin(LitElement) {
         }
 
         return this.readParentPropertyValue(parentProperty);
+    }
+
+    protected async getParentNodePropertyValue(parentPropertyAlias?: string): Promise<unknown> {
+        if (!parentPropertyAlias || !this.documentWorkspaceContext) {
+            return undefined;
+        }
+
+        const currentDocumentUnique = this.documentWorkspaceContext.getUnique() ?? undefined;
+        if (!currentDocumentUnique) {
+            return undefined;
+        }
+
+        const itemRepository = new UmbDocumentItemRepository(this);
+        const itemResponse = await itemRepository.requestItems([currentDocumentUnique]);
+        const currentItem = itemResponse.data?.[0];
+        const parentUnique = currentItem?.parent?.unique;
+
+        if (!parentUnique) {
+            return undefined;
+        }
+
+        const detailRepository = new UmbDocumentDetailRepository(this);
+        const detailResponse = await detailRepository.requestByUnique(parentUnique);
+        const parentDetail = detailResponse.data;
+
+        if (!parentDetail?.values?.length) {
+            return undefined;
+        }
+
+        const parentValue = parentDetail.values.find((x) => x.alias === parentPropertyAlias);
+        return parentValue?.value;
     }
 
     protected getCurrentPropertyValue(propertyAlias?: string): unknown {
@@ -114,7 +149,7 @@ export abstract class CdElement extends UmbElementMixin(LitElement) {
     }
 
     private readParentPropertyValue(parentPropertyElement: HTMLElement): unknown {
-        const input = deepQuerySelectAll('input,select,textarea,uui-toggle,uui-checkbox', parentPropertyElement, true)[0] as
+        const input = deepQuerySelectAll('input,select,textarea,uui-select,uui-toggle,uui-checkbox', parentPropertyElement, true)[0] as
             | HTMLInputElement
             | HTMLSelectElement
             | HTMLTextAreaElement
