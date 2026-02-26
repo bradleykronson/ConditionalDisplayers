@@ -101,29 +101,16 @@ export class CdRadioElement extends CdElement {
             this.runCheckboxGroupDisplayLogic();
             return;
         }
+     
+        const selectedItem = this.getActiveItem();
 
-        const selectedItem = this.getActiveRadioItem();
         if (selectedItem) {
             this.displayProps(selectedItem.show, selectedItem.hide);
         }
     }
 
-    private runCheckboxGroupDisplayLogic() {
-        const selectedItems = this.getActiveCheckboxItems();
-        if (selectedItems.length === 0) {
-            return;
-        }
 
-        const allShows = this.availableValues.map(x => x.show).filter(x => !!x).join(",");
-        const allHides = this.availableValues.map(x => x.hide).filter(x => !!x).join(",");
-        this.displayProps(`${allShows},${allHides}`, "");
-
-        const selectedShows = selectedItems.map(x => x.show).filter(x => !!x).join(",");
-        const selectedHides = selectedItems.map(x => x.hide).filter(x => !!x).join(",");
-        this.displayProps(selectedShows, selectedHides);
-    }
-
-    private getActiveRadioItem(): CdMultiValueModelDto | undefined {
+    private getActiveItem(): CdMultiValueModelDto | undefined {
         if (this.configParentPropertyAlias) {
             const parentValue = this.getParentPropertyValue(this.configParentPropertyAlias);
             if (parentValue !== undefined && parentValue !== null) {
@@ -132,37 +119,13 @@ export class CdRadioElement extends CdElement {
             }
         }
 
-        return this.availableValues.find(x => x.value === this.selectedValue || x.key === this.selectedValue);
-    }
-
-    private getActiveCheckboxItems(): Array<CdMultiValueModelDto> {
-        const values = this.getActiveCheckboxValues();
-        return this.availableValues.filter(x => values.includes(x.value) || values.includes(x.key));
-    }
-
-    private getActiveCheckboxValues(): Array<string> {
-        if (this.configParentPropertyAlias) {
-            const parentValue = this.getParentPropertyValue(this.configParentPropertyAlias);
-            if (parentValue !== undefined && parentValue !== null) {
-                return this.parseMultiValue(String(parentValue));
-            }
-        }
-
-        return this.selectedValues;
-    }
-
-    private parseMultiValue(value: string): Array<string> {
-        return value
-            .split(",")
-            .map(x => x.trim())
-            .filter(x => !!x);
+        return this.selectedItem;
     }
 
     private assignValuesFromConfig(config: UmbPropertyEditorConfigCollection) {
         this.configItems = config.getValueByAlias(cdRadioPropertyInfo.items.alias);
         this.configDefaultValue = config.getValueByAlias(cdRadioPropertyInfo.default.alias);
         this.configParentPropertyAlias = config.getValueByAlias(cdRadioPropertyInfo.parentPropertyAlias.alias);
-        this.configSelectionType = (config.getValueByAlias(cdRadioPropertyInfo.selectionType.alias) ?? "Radio") as SelectionType;
         this.configAlignHorizontal = config.getValueByAlias(cdRadioPropertyInfo.alignHrz.alias);
         this.configLabelPosition = config.getValueByAlias(cdRadioPropertyInfo.labelsPos.alias);
         this.configAsButton = config.getValueByAlias(cdRadioPropertyInfo.asBtn.alias);

@@ -136,6 +136,13 @@ export const cdDropdownFlexiblePropertyInfo = {
         alias: "parentPropertyAlias",
         propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
     }
+,
+    parentPropertyAlias: {
+        label: "Parent property alias",
+        description: "Optional. Use a parent property value to drive this displayer on the child node.",
+        alias: "parentPropertyAlias",
+        propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
+    }
 } satisfies Record<string, PropertyEditorSettingsProperty & { value?: any }>;
 
 const cdCheckboxProperties: Array<PropertyEditorSettingsProperty & { value?: any }> = Object.keys(cdCheckboxPropertyInfo).map(x => (cdCheckboxPropertyInfo as unknown as Record<string, PropertyEditorSettingsProperty & { value?: any }>)[x]);
