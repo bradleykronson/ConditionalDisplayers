@@ -270,3 +270,9 @@ build/*.zip
 
 **/App_Plugins
 .DS_Store
+
+# Keep packaged backoffice assets for ConditionalDisplayers
+!ConditionalDisplayers/wwwroot/
+!ConditionalDisplayers/wwwroot/App_Plugins/
+!ConditionalDisplayers/wwwroot/App_Plugins/ConditionalDisplayers/
+!ConditionalDisplayers/wwwroot/App_Plugins/ConditionalDisplayers/**
