@@ -28,6 +28,9 @@ export class CdDropDownFlexibleElement extends CdElement {
     private configItems?: string;
 
     @state()
+    private configParentPropertyAlias?: string;
+
+    @state()
     private viewModelSelectOptions: Array<Option> = [];
 
     #__selectedValue: string = "";
@@ -80,17 +83,32 @@ export class CdDropDownFlexibleElement extends CdElement {
             };
         });
 
-        if (this.selectedItem) {
-            this.displayProps(this.selectedItem.show, this.selectedItem.hide);
+        const selectedItem = this.getActiveItem();
+        if (selectedItem) {
+            this.displayProps(selectedItem.show, selectedItem.hide);
         }
     }
 
     private assignValuesFromConfig(config: UmbPropertyEditorConfigCollection) {
         this.configItems = config.getValueByAlias(cdDropdownFlexiblePropertyInfo.items.alias);
         this.configDefaultValue = config.getValueByAlias(cdDropdownFlexiblePropertyInfo.default.alias);
+        this.configParentPropertyAlias = config.getValueByAlias(cdDropdownFlexiblePropertyInfo.parentPropertyAlias.alias);
 
         // convert values
         this.availableValues = this.configItems as unknown as Array<CdMultiValueModelDto>;
+    }
+
+
+    private getActiveItem(): CdMultiValueModelDto | undefined {
+        if (this.configParentPropertyAlias) {
+            const parentValue = this.getParentPropertyValue(this.configParentPropertyAlias);
+            if (parentValue !== undefined && parentValue !== null) {
+                const normalized = String(parentValue);
+                return this.availableValues.find(x => x.key === normalized || x.value === normalized);
+            }
+        }
+
+        return this.selectedItem;
     }
 
     private isValidSelection(value: string): boolean {

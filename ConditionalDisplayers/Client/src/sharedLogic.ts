@@ -1,14 +1,9 @@
-export type TargetScope = 'self' | 'parent';
-
 type TargetType = 'property' | 'section';
 
 type ConditionalTarget = {
-    scope: TargetScope;
     type: TargetType;
     value: string;
 };
-
-const parentPrefix = 'parent:';
 
 const parseTargets = (aliases: string): ConditionalTarget[] => {
     if (!aliases) {
@@ -19,16 +14,10 @@ const parseTargets = (aliases: string): ConditionalTarget[] => {
         .split(',')
         .map((x) => x.trim())
         .filter((x) => !!x)
-        .map((raw) => {
-            const isParent = raw.toLowerCase().startsWith(parentPrefix);
-            const value = isParent ? raw.substring(parentPrefix.length).trim() : raw;
-
-            return {
-                scope: isParent ? 'parent' : 'self',
-                type: isSectionTarget(value) ? 'section' : 'property',
-                value,
-            } satisfies ConditionalTarget;
-        })
+        .map((value) => ({
+            type: isSectionTarget(value) ? 'section' : 'property',
+            value,
+        } satisfies ConditionalTarget))
         .filter((x) => !!x.value);
 };
 
@@ -47,10 +36,9 @@ const toSelector = (target: ConditionalTarget): string => {
 export const toggleElements = (
     aliases: string,
     isShow: boolean,
-    hostElement: HTMLElement,
-    scope: TargetScope = 'self'
+    hostElement: HTMLElement
 ) => {
-    const targets = parseTargets(aliases).filter((x) => x.scope === scope);
+    const targets = parseTargets(aliases);
 
     if (targets.length === 0) {
         return;

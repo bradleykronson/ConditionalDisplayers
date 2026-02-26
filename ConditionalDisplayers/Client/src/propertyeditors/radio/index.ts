@@ -30,6 +30,9 @@ export class CdRadioElement extends CdElement {
     private configItems?: string;
 
     @state()
+    private configParentPropertyAlias?: string;
+
+    @state()
     private configAlignHorizontal?: boolean;
 
     @state()
@@ -73,14 +76,30 @@ export class CdRadioElement extends CdElement {
     }
 
     protected override runDisplayLogic() {
-        if (this.selectedItem) {
-            this.displayProps(this.selectedItem.show, this.selectedItem.hide);
+        const selectedItem = this.getActiveItem();
+
+        if (selectedItem) {
+            this.displayProps(selectedItem.show, selectedItem.hide);
         }
+    }
+
+
+    private getActiveItem(): CdMultiValueModelDto | undefined {
+        if (this.configParentPropertyAlias) {
+            const parentValue = this.getParentPropertyValue(this.configParentPropertyAlias);
+            if (parentValue !== undefined && parentValue !== null) {
+                const normalized = String(parentValue);
+                return this.availableValues.find(x => x.value === normalized || x.key === normalized);
+            }
+        }
+
+        return this.selectedItem;
     }
 
     private assignValuesFromConfig(config: UmbPropertyEditorConfigCollection) {
         this.configItems = config.getValueByAlias(cdRadioPropertyInfo.items.alias);
         this.configDefaultValue = config.getValueByAlias(cdRadioPropertyInfo.default.alias);
+        this.configParentPropertyAlias = config.getValueByAlias(cdRadioPropertyInfo.parentPropertyAlias.alias);
         this.configAlignHorizontal = config.getValueByAlias(cdRadioPropertyInfo.alignHrz.alias);
         this.configLabelPosition = config.getValueByAlias(cdRadioPropertyInfo.labelsPos.alias);
         this.configAsButton = config.getValueByAlias(cdRadioPropertyInfo.asBtn.alias);

@@ -12,14 +12,20 @@ export const cdCheckboxPropertyInfo = {
     },
     showIfChecked: {
         label: "Show if checked",
-        description: "Targets to show when checked. Supports property aliases, section keys (tab-..., tab-content-..., group-...) and parent scope with parent:.<br />*Multiple targets must be comma separated.*",
+        description: "Targets to show when checked. Supports property aliases and section keys (tab-..., tab-content-..., group-...).<br />*Multiple targets must be comma separated.*",
         alias: "showIfChecked",
         propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
     },
     showIfUnchecked: {
         label: "Show if unchecked",
-        description: "Targets to show when unchecked. Supports property aliases, section keys (tab-..., tab-content-..., group-...) and parent scope with parent:.<br />*Multiple targets must be comma separated.*",
+        description: "Targets to show when unchecked. Supports property aliases and section keys (tab-..., tab-content-..., group-...).<br />*Multiple targets must be comma separated.*",
         alias: "showIfUnchecked",
+        propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
+    },
+    parentPropertyAlias: {
+        label: "Parent property alias",
+        description: "Optional. Use a parent property value to drive this displayer on the child node.",
+        alias: "parentPropertyAlias",
         propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
     },
     showLabels: {
@@ -45,7 +51,7 @@ export const cdCheckboxPropertyInfo = {
 export const cdRadioPropertyInfo = {
     items: {
         label: "Add prevalue",
-        description: "Add, remove or sort values for the conditional list.<br />Use aliases/sections in Show/Hide, prefix with parent: to target parent node sections/properties.<br />*Multiple targets must be comma separated.*",
+        description: "Add, remove or sort values for the conditional list.<br />Use aliases/sections in Show/Hide.<br />*Multiple targets must be comma separated.*",
         alias: "items",
         propertyEditorUiAlias: "Our.Umbraco.CdMultivalues",
     },
@@ -53,6 +59,12 @@ export const cdRadioPropertyInfo = {
         label: "Default value",
         description: "Type the key from the list created above to be the initial default selection.<br/>*(Optional)*",
         alias: "default",
+        propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
+    },
+    parentPropertyAlias: {
+        label: "Parent property alias",
+        description: "Optional. Use a parent property value to drive this displayer on the child node.",
+        alias: "parentPropertyAlias",
         propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
     },
     alignHrz: {
@@ -84,7 +96,7 @@ export const cdRadioPropertyInfo = {
 export const cdDropdownFlexiblePropertyInfo = {
     items: {
         label: "Add prevalue",
-        description: "Add, remove or sort values for the conditional list.<br />Use aliases/sections in Show/Hide, prefix with parent: to target parent node sections/properties.<br />*Multiple targets must be comma separated.*",
+        description: "Add, remove or sort values for the conditional list.<br />Use aliases/sections in Show/Hide.<br />*Multiple targets must be comma separated.*",
         alias: "items",
         propertyEditorUiAlias: "Our.Umbraco.CdMultivalues",
     },
@@ -92,6 +104,13 @@ export const cdDropdownFlexiblePropertyInfo = {
         label: "Default value",
         description: "Type the value name from the list created above to be the initial default selection.<br/>*(Optional)*",
         alias: "default",
+        propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
+    }
+,
+    parentPropertyAlias: {
+        label: "Parent property alias",
+        description: "Optional. Use a parent property value to drive this displayer on the child node.",
+        alias: "parentPropertyAlias",
         propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
     }
 } satisfies Record<string, PropertyEditorSettingsProperty & { value?: any }>;
