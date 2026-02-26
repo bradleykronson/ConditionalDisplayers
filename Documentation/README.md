@@ -28,7 +28,7 @@ You'll have to create a list of options that the dropdown will display. In addit
 
 ### Radio list
 
-There's also a radio list datatype with the name '[Conditional] Radio Displayer'. The configuration of this editor is the same as the previous ones
+There's also a radio/checkbox-group datatype with the name '[Conditional] Radio Displayer'. Use **Selection type** to switch between classic radio behavior and checkbox-group behavior.
 
 
 ## Step-by-step usage guide (same node + parent-driven child logic)
@@ -61,6 +61,7 @@ Use these fields in the data type config:
 - **Default**: checked or unchecked initial state.
 - **Show when checked**: comma-separated targets shown when checked.
 - **Show when unchecked**: comma-separated targets shown when unchecked.
+- **Parent property alias** *(optional)*: parent property alias whose value drives this child checkbox logic.
 
 #### 3) Example — same node
 
@@ -99,6 +100,9 @@ Each item lets you configure:
 - **Key** (stored value)
 - **Show** targets
 - **Hide** targets
+
+Data type setting:
+- **Parent property alias** *(optional)*: if set, the parent value selects the matching item `Key`/`Value` and applies that item's Show/Hide targets on the child node.
 
 #### 3) Example — same node
 
@@ -141,6 +145,10 @@ Each option has:
 - **Show** targets
 - **Hide** targets
 
+Data type settings:
+- **Selection type**: `Radio` (single select) or `Checkbox` (multi-select checkbox group).
+- **Parent property alias** *(optional)*: when set, parent value drives item selection for child visibility logic.
+
 #### 3) Example — same node
 
 Properties:
@@ -163,6 +171,57 @@ Options:
 
 
 ---
+
+### D) Detailed parent-driven examples (per editor)
+
+#### Checkbox example (boolean parent)
+
+Scenario:
+- Parent property alias: `enableSeo` (toggle).
+- Child checkbox displayer config:
+  - **Parent property alias**: `enableSeo`
+  - **Show when checked**: `seoTitle,seoDescription,tab-seo`
+  - **Show when unchecked**: `seoDisabledMessage`
+
+Behavior:
+- Parent `enableSeo = true` → child shows `seoTitle`, `seoDescription`, `tab-seo`; hides `seoDisabledMessage`.
+- Parent `enableSeo = false` → child shows `seoDisabledMessage`; hides SEO fields.
+
+#### Dropdown example (string parent)
+
+Scenario:
+- Parent property alias: `heroLayout` with possible values `image` / `video`.
+- Child dropdown displayer config:
+  - **Parent property alias**: `heroLayout`
+  - Item `Image layout` (`key=image`): Show `heroImage,heroCaption`; Hide `heroVideoUrl`.
+  - Item `Video layout` (`key=video`): Show `heroVideoUrl`; Hide `heroImage,heroCaption`.
+
+Behavior:
+- Parent `heroLayout=image` → image targets shown, video targets hidden.
+- Parent `heroLayout=video` → video targets shown, image targets hidden.
+
+#### Radio/Checkbox-group example (single and multi parent values)
+
+Scenario A — Radio mode:
+- **Selection type**: `Radio`
+- Parent property alias: `contentMode` with value `summary` / `article` / `quote`.
+- Child options map by `Key`/`Value` exactly as configured.
+
+Behavior:
+- Parent picks one mode; matching item Show/Hide rules run on child.
+
+Scenario B — Checkbox mode:
+- **Selection type**: `Checkbox`
+- Parent property alias: `enabledBlocks`
+- Parent value format: comma-separated values (e.g. `gallery,video`).
+- Child checkbox-group options:
+  - `gallery`: Show `galleryPicker`; Hide `galleryDisabledNote`
+  - `video`: Show `videoUrl`; Hide `videoDisabledNote`
+  - `cta`: Show `ctaText`; Hide `ctaDisabledNote`
+
+Behavior:
+- Parent value `gallery,video` → gallery + video targets shown/hidden per selected items.
+- Unselected option targets remain reset unless explicitly hidden by selected item rules.
 
 ### Target format rules (important)
 

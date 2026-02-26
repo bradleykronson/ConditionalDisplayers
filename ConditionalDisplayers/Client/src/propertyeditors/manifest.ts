@@ -28,6 +28,18 @@ export const cdCheckboxPropertyInfo = {
         alias: "parentPropertyAlias",
         propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
     },
+    selectionType: {
+        label: "Selection type",
+        description: "Choose whether this editor behaves as a radio list (single selection) or checkbox list (multiple selections).",
+        alias: "selectionType",
+        propertyEditorUiAlias: "Umb.PropertyEditorUi.RadioButtonList",
+        config: [
+            {
+                alias: "items",
+                value: ["Radio", "Checkbox"],
+            }
+        ]
+    },
     showLabels: {
         label: "Show toggle labels",
         description: "Show labels next to toggle button.",
@@ -67,6 +79,18 @@ export const cdRadioPropertyInfo = {
         alias: "parentPropertyAlias",
         propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
     },
+    selectionType: {
+        label: "Selection type",
+        description: "Choose whether this editor behaves as a radio list (single selection) or checkbox list (multiple selections).",
+        alias: "selectionType",
+        propertyEditorUiAlias: "Umb.PropertyEditorUi.RadioButtonList",
+        config: [
+            {
+                alias: "items",
+                value: ["Radio", "Checkbox"],
+            }
+        ]
+    },
     alignHrz: {
         label: "Align Horizontally",
         description: "Radio button are stacked vertically by default. Toggle this to align them horizontally",
@@ -104,6 +128,12 @@ export const cdDropdownFlexiblePropertyInfo = {
         label: "Default value",
         description: "Type the value name from the list created above to be the initial default selection.<br/>*(Optional)*",
         alias: "default",
+        propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
+    },
+    parentPropertyAlias: {
+        label: "Parent property alias",
+        description: "Optional. Use a parent property value to drive this displayer on the child node.",
+        alias: "parentPropertyAlias",
         propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
     }
 ,
@@ -167,6 +197,10 @@ export const manifests: Array<UmbExtensionManifest> = [
                     {
                         alias: cdRadioPropertyInfo.labelsPos.alias,
                         value: 'Right'
+                    },
+                    {
+                        alias: cdRadioPropertyInfo.selectionType.alias,
+                        value: 'Radio'
                     }
                 ]
             }
