@@ -8,6 +8,7 @@ import { CdElement } from "../../abstractions/CdElement";
 import { CdMultiValueModelDto } from "../../components/cdMultivalues";
 
 type LabelPositions = "Top" | "Bottom" | "Left" | "Right";
+type SelectionType = "Radio" | "Checkbox";
 
 export const elementName = `${tagPrefix}-radio`;
 
@@ -30,6 +31,12 @@ export class CdRadioElement extends CdElement {
     private configItems?: string;
 
     @state()
+    private configParentPropertyAlias?: string;
+
+    @state()
+    private configSelectionType: SelectionType = "Radio";
+
+    @state()
     private configAlignHorizontal?: boolean;
 
     @state()
@@ -48,18 +55,35 @@ export class CdRadioElement extends CdElement {
             throw new Error("value not set");
         }
         this.#__selectedValue = newValue;
-        this.selectedItem = this.availableValues.find(x => x.value === newValue);
         this.value = newValue;
         this.dispatchEvent(new UmbChangeEvent());
     }
 
-    private selectedItem?: CdMultiValueModelDto;
+    #__selectedValues: Array<string> = [];
+    @state()
+    public get selectedValues() {
+        return this.#__selectedValues;
+    }
+    private set selectedValues(values: Array<string>) {
+        this.#__selectedValues = values;
+        this.value = values.join(",");
+        this.dispatchEvent(new UmbChangeEvent());
+    }
 
     protected override bootstrap() {
         this.runDisplayLogic();
     }
 
     protected override initDefaults() {
+        if (this.configSelectionType === "Checkbox") {
+            if (this.value && this.value.trim().length > 0) {
+                this.selectedValues = this.parseMultiValue(this.value);
+            } else if (this.configDefaultValue && this.configDefaultValue.trim().length > 0) {
+                this.selectedValues = this.parseMultiValue(this.configDefaultValue);
+            }
+            return;
+        }
+
         if (this.value) {
             this.selectedValue = this.value;
         } else {
@@ -73,37 +97,117 @@ export class CdRadioElement extends CdElement {
     }
 
     protected override runDisplayLogic() {
-        if (this.selectedItem) {
-            this.displayProps(this.selectedItem.show, this.selectedItem.hide);
+        if (this.configSelectionType === "Checkbox") {
+            this.runCheckboxGroupDisplayLogic();
+            return;
         }
+
+        const selectedItem = this.getActiveRadioItem();
+        if (selectedItem) {
+            this.displayProps(selectedItem.show, selectedItem.hide);
+        }
+    }
+
+    private runCheckboxGroupDisplayLogic() {
+        const selectedItems = this.getActiveCheckboxItems();
+        if (selectedItems.length === 0) {
+            return;
+        }
+
+        const allShows = this.availableValues.map(x => x.show).filter(x => !!x).join(",");
+        const allHides = this.availableValues.map(x => x.hide).filter(x => !!x).join(",");
+        this.displayProps(`${allShows},${allHides}`, "");
+
+        const selectedShows = selectedItems.map(x => x.show).filter(x => !!x).join(",");
+        const selectedHides = selectedItems.map(x => x.hide).filter(x => !!x).join(",");
+        this.displayProps(selectedShows, selectedHides);
+    }
+
+    private getActiveRadioItem(): CdMultiValueModelDto | undefined {
+        if (this.configParentPropertyAlias) {
+            const parentValue = this.getParentPropertyValue(this.configParentPropertyAlias);
+            if (parentValue !== undefined && parentValue !== null) {
+                const normalized = String(parentValue);
+                return this.availableValues.find(x => x.value === normalized || x.key === normalized);
+            }
+        }
+
+        return this.availableValues.find(x => x.value === this.selectedValue || x.key === this.selectedValue);
+    }
+
+    private getActiveCheckboxItems(): Array<CdMultiValueModelDto> {
+        const values = this.getActiveCheckboxValues();
+        return this.availableValues.filter(x => values.includes(x.value) || values.includes(x.key));
+    }
+
+    private getActiveCheckboxValues(): Array<string> {
+        if (this.configParentPropertyAlias) {
+            const parentValue = this.getParentPropertyValue(this.configParentPropertyAlias);
+            if (parentValue !== undefined && parentValue !== null) {
+                return this.parseMultiValue(String(parentValue));
+            }
+        }
+
+        return this.selectedValues;
+    }
+
+    private parseMultiValue(value: string): Array<string> {
+        return value
+            .split(",")
+            .map(x => x.trim())
+            .filter(x => !!x);
     }
 
     private assignValuesFromConfig(config: UmbPropertyEditorConfigCollection) {
         this.configItems = config.getValueByAlias(cdRadioPropertyInfo.items.alias);
         this.configDefaultValue = config.getValueByAlias(cdRadioPropertyInfo.default.alias);
+        this.configParentPropertyAlias = config.getValueByAlias(cdRadioPropertyInfo.parentPropertyAlias.alias);
+        this.configSelectionType = (config.getValueByAlias(cdRadioPropertyInfo.selectionType.alias) ?? "Radio") as SelectionType;
         this.configAlignHorizontal = config.getValueByAlias(cdRadioPropertyInfo.alignHrz.alias);
         this.configLabelPosition = config.getValueByAlias(cdRadioPropertyInfo.labelsPos.alias);
         this.configAsButton = config.getValueByAlias(cdRadioPropertyInfo.asBtn.alias);
 
-        // convert values
         this.availableValues = this.configItems as unknown as Array<CdMultiValueModelDto>;
     }
 
     private isValidSelection(value: string): boolean {
-        return !!this.availableValues.find(x => x.value === value);
+        return !!this.availableValues.find(x => x.value === value || x.key === value);
     }
 
     #onChange(event: UUIBooleanInputEvent) {
         event.stopPropagation();
         const value = event.target.value;
-        this.selectedValue = value;
 
+        if (this.configSelectionType === "Checkbox") {
+            const target = event.target as unknown as HTMLInputElement;
+            const current = [...this.selectedValues];
+
+            if (target.checked) {
+                if (!current.includes(value)) {
+                    current.push(value);
+                }
+            } else {
+                this.selectedValues = current.filter(x => x !== value);
+                this.runDisplayLogic();
+                return;
+            }
+
+            this.selectedValues = current;
+            this.runDisplayLogic();
+            return;
+        }
+
+        this.selectedValue = value;
         this.runDisplayLogic();
     }
 
     render() {
         if (this.availableValues.length === 0) {
             return html`<p>No conditional items configured</p>`;
+        }
+
+        if (this.configSelectionType === "Checkbox") {
+            return this.renderCheckboxGroup();
         }
 
         return html`
@@ -115,12 +219,22 @@ export class CdRadioElement extends CdElement {
         return html`
         <div class="cd-conditional-group ${this.configAlignHorizontal ? "horizontal" : ""} labelpos-${this.configLabelPosition}" @change=${this.#onChange}>
             ${repeat(this.availableValues, x => html`
-                <label><input type="radio" name="radioGroup" value="${x.value}" .checked=${this.selectedValue === x.value} /><span class="label">${x.value}</span></label>
+                <label><input type="radio" name="radioGroup" value="${x.value}" .checked=${this.selectedValue === x.value || this.selectedValue === x.key} /><span class="label">${x.value}</span></label>
             `)}
-
-            </div>
+        </div>
         `;
     }
+
+    private renderCheckboxGroup() {
+        return html`
+        <div class="cd-conditional-group ${this.configAlignHorizontal ? "horizontal" : ""} labelpos-${this.configLabelPosition}" @change=${this.#onChange}>
+            ${repeat(this.availableValues, x => html`
+                <label><input type="checkbox" value="${x.value}" .checked=${this.selectedValues.includes(x.value) || this.selectedValues.includes(x.key)} /><span class="label">${x.value}</span></label>
+            `)}
+        </div>
+        `;
+    }
+
     private renderButtonGroup() {
         return html`
         <div class="cd-conditional-group ${this.configAlignHorizontal ? "horizontal" : ""}" @click=${this.#onChange}>

@@ -28,15 +28,15 @@ You'll have to create a list of options that the dropdown will display. In addit
 
 ### Radio list
 
-There's also a radio list datatype with the name '[Conditional] Radio Displayer'. The configuration of this editor is the same as the previous ones
+There's also a radio/checkbox-group datatype with the name '[Conditional] Radio Displayer'. Use **Selection type** to switch between classic radio behavior and checkbox-group behavior.
 
 
-## Step-by-step usage guide (same node and parent node)
+## Step-by-step usage guide (same node + parent-driven child logic)
 
 This section shows exactly how to set up each Conditional Displayer editor and how to target:
 
 1. **properties on the same node**
-2. **properties/sections on the parent node** (using the `parent:` prefix)
+2. **properties/sections on the same child node, driven by a parent property value**
 
 ### Before you start
 
@@ -61,6 +61,7 @@ Use these fields in the data type config:
 - **Default**: checked or unchecked initial state.
 - **Show when checked**: comma-separated targets shown when checked.
 - **Show when unchecked**: comma-separated targets shown when unchecked.
+- **Parent property alias** *(optional)*: parent property alias whose value drives this child checkbox logic.
 
 #### 3) Example — same node
 
@@ -80,16 +81,6 @@ Result:
 - Checked → `heroTitle` and `heroSubtitle` are shown.
 - Unchecked → `hideHeroNote` is shown.
 
-#### 4) Example — parent node
-
-If your editor is inside a nested/child context and you want to target the parent node:
-
-- **Show when checked**: `parent:seoTitle,parent:tab-seo`
-- **Show when unchecked**: `parent:group-seo/social`
-
-Result:
-- Checked → parent property `seoTitle` + parent tab `tab-seo` are shown.
-- Unchecked → parent group panel `group-seo/social` is shown.
 
 ---
 
@@ -109,6 +100,9 @@ Each item lets you configure:
 - **Key** (stored value)
 - **Show** targets
 - **Hide** targets
+
+Data type setting:
+- **Parent property alias** *(optional)*: if set, the parent value selects the matching item `Key`/`Value` and applies that item's Show/Hide targets on the child node.
 
 #### 3) Example — same node
 
@@ -131,14 +125,6 @@ Result:
 - Selecting *Image layout* shows image fields and hides video.
 - Selecting *Video layout* does the opposite.
 
-#### 4) Example — parent node
-
-- Item **Inherit SEO** (`key=inherit`)
-  - Show: `parent:seoTitle,parent:seoDescription`
-  - Hide: `parent:tab-openGraph`
-
-Result:
-- Parent SEO properties are shown, and parent Open Graph tab is hidden for this selection.
 
 ---
 
@@ -158,6 +144,10 @@ Each option has:
 - **Key**
 - **Show** targets
 - **Hide** targets
+
+Data type settings:
+- **Selection type**: `Radio` (single select) or `Checkbox` (multi-select checkbox group).
+- **Parent property alias** *(optional)*: when set, parent value drives item selection for child visibility logic.
 
 #### 3) Example — same node
 
@@ -179,28 +169,79 @@ Options:
   - Show: `quoteText`
   - Hide: `summary,longBody`
 
-#### 4) Example — parent node
-
-- **Advanced mode** (`key=advanced`)
-  - Show: `parent:tab-advanced,parent:group-advanced/options`
-  - Hide: `parent:tab-basic`
-
-Result:
-- Parent advanced tab/group is shown, parent basic tab is hidden.
 
 ---
 
+### D) Detailed parent-driven examples (per editor)
+
+#### Checkbox example (boolean parent)
+
+Scenario:
+- Parent property alias: `enableSeo` (toggle).
+- Child checkbox displayer config:
+  - **Parent property alias**: `enableSeo`
+  - **Show when checked**: `seoTitle,seoDescription,tab-seo`
+  - **Show when unchecked**: `seoDisabledMessage`
+
+Behavior:
+- Parent `enableSeo = true` → child shows `seoTitle`, `seoDescription`, `tab-seo`; hides `seoDisabledMessage`.
+- Parent `enableSeo = false` → child shows `seoDisabledMessage`; hides SEO fields.
+
+#### Dropdown example (string parent)
+
+Scenario:
+- Parent property alias: `heroLayout` with possible values `image` / `video`.
+- Child dropdown displayer config:
+  - **Parent property alias**: `heroLayout`
+  - Item `Image layout` (`key=image`): Show `heroImage,heroCaption`; Hide `heroVideoUrl`.
+  - Item `Video layout` (`key=video`): Show `heroVideoUrl`; Hide `heroImage,heroCaption`.
+
+Behavior:
+- Parent `heroLayout=image` → image targets shown, video targets hidden.
+- Parent `heroLayout=video` → video targets shown, image targets hidden.
+
+#### Radio/Checkbox-group example (single and multi parent values)
+
+Scenario A — Radio mode:
+- **Selection type**: `Radio`
+- Parent property alias: `contentMode` with value `summary` / `article` / `quote`.
+- Child options map by `Key`/`Value` exactly as configured.
+
+Behavior:
+- Parent picks one mode; matching item Show/Hide rules run on child.
+
+Scenario B — Checkbox mode:
+- **Selection type**: `Checkbox`
+- Parent property alias: `enabledBlocks`
+- Parent value format: comma-separated values (e.g. `gallery,video`).
+- Child checkbox-group options:
+  - `gallery`: Show `galleryPicker`; Hide `galleryDisabledNote`
+  - `video`: Show `videoUrl`; Hide `videoDisabledNote`
+  - `cta`: Show `ctaText`; Hide `ctaDisabledNote`
+
+Behavior:
+- Parent value `gallery,video` → gallery + video targets shown/hidden per selected items.
+- Unselected option targets remain reset unless explicitly hidden by selected item rules.
+
 ### Target format rules (important)
 
-- Separate multiple targets with commas: `heroTitle,heroSubtitle,parent:seoTitle`
-- Parent scope prefix: `parent:<target>`
 - Tabs: `tab-<tabName>`
 - Tab content groups: `tab-content-<tabName>`
 - Group panels: `group-<tabName>/<groupName>`
 
-You can combine local and parent targets in one field:
 
-- `heroTitle,parent:seoTitle,parent:tab-seo`
+## Parent-driven child display
+
+You can now set an optional **Parent property alias** in each displayer data type.
+
+- When this setting is empty, the displayer uses its own value (default behavior).
+- When it is set, the displayer reads the parent property value and applies the configured Show/Hide targets on the child node.
+
+Examples:
+- Checkbox displayer + parent alias `inheritSettings` (boolean): checked-like behavior is taken from the parent value.
+- Dropdown/Radio displayer + parent alias `layoutMode`: the parent value is matched against each item `Key`/`Value`.
+
+This gives you a clean setup where parent data controls what is visible on child properties.
 
 ## Tabs and Groups
 The previous documentation talks about *property names* to configure the editors, but you can also configure them to show or hide tabs and groups. [Jump to the extended documentation.](tabs-and-groups)
@@ -235,8 +276,3 @@ You can access to the backoffice of all the site with the following credentials:
 **Username**: `admin@admin.com`\
 **Password**: `Password123`
 
-## Parent node targets
-
-Conditional target fields now support `parent:` scope in addition to local aliases.
-
-Use `parent:<target>` to toggle parent node properties or sections. Section targets still use data-element keys (`tab-...`, `tab-content-...`, `group-...`).

@@ -2,7 +2,7 @@ const t = {
   name: "Conditional Displayers Entrypoint",
   alias: "Our.Umbraco.ConditionalDisplayers.Entrypoint",
   type: "backofficeEntryPoint",
-  js: () => import("./backoffice-entrypoint-C3a3bwA3.js").then((n) => n.b)
+  js: () => import("./backoffice-entrypoint-DX-oH3N3.js").then((n) => n.b)
 }, i = [
   t
 ];

@@ -1,6 +1,6 @@
 import { nothing as w, repeat as I, html as m, property as f, state as h, customElement as g } from "@umbraco-cms/backoffice/external/lit";
 import { UmbChangeEvent as _ } from "@umbraco-cms/backoffice/event";
-import { t as E } from "./backoffice-entrypoint-C3a3bwA3.js";
+import { t as E } from "./backoffice-entrypoint-DX-oH3N3.js";
 import { UmbLitElement as $ } from "@umbraco-cms/backoffice/lit-element";
 var k = Object.defineProperty, O = Object.getOwnPropertyDescriptor, d = (e) => {
   throw TypeError(e);
@@ -84,10 +84,10 @@ let s = class extends $ {
                         <uui-input name="key" type="text" style="width: 100%;" .value=${this.liveItem.key}></uui-input>
                     </uui-table-cell>
                     <uui-table-cell>
-                        <uui-input name="show" type="text"  style="width: 100%;" placeholder="Targets (alias or parent:alias / tab-... / parent:tab-...)" .value=${this.liveItem.show}></uui-input>
+                        <uui-input name="show" type="text"  style="width: 100%;" placeholder="Targets (alias / tab-... / tab-content-... / group-...)" .value=${this.liveItem.show}></uui-input>
                     </uui-table-cell>
                     <uui-table-cell>
-                        <uui-input name="hide" type="text"  style="width: 100%;" placeholder="Targets (alias or parent:alias / tab-... / parent:tab-...)" .value=${this.liveItem.hide}></uui-input>
+                        <uui-input name="hide" type="text"  style="width: 100%;" placeholder="Targets (alias / tab-... / tab-content-... / group-...)" .value=${this.liveItem.hide}></uui-input>
                     </uui-table-cell>
                     <uui-table-cell>
                         <uui-button label="Add" @click=${o(this, a, v)} compact="compact" look="secondary" title="Add new item"><uui-icon name="icon-badge-add"></uui-icon> Add</uui-button>
@@ -102,10 +102,10 @@ let s = class extends $ {
                         <uui-input name="key" type="text" style="width: 100%;" .value=${e.key} ></uui-input>
                     </uui-table-cell>
                     <uui-table-cell>
-                        <uui-input name="show" type="text" style="width: 100%;" placeholder="Targets (alias or parent:alias / tab-... / parent:tab-...)" .value=${e.show}></uui-input>
+                        <uui-input name="show" type="text" style="width: 100%;" placeholder="Targets (alias / tab-... / tab-content-... / group-...)" .value=${e.show}></uui-input>
                     </uui-table-cell>
                     <uui-table-cell>
-                        <uui-input name="hide" type="text" style="width: 100%;" placeholder="Targets (alias or parent:alias / tab-... / parent:tab-...)" .value=${e.hide}></uui-input>
+                        <uui-input name="hide" type="text" style="width: 100%;" placeholder="Targets (alias / tab-... / tab-content-... / group-...)" .value=${e.hide}></uui-input>
                     </uui-table-cell>
                     <uui-table-cell>
                         <uui-button label="Remove" @click=${o(this, a, y)} compact="compact" look="secondary" color="danger" title="Remove item"><uui-icon name="icon-trash"></uui-icon> Remove</uui-button>
@@ -151,4 +151,4 @@ export {
   F as default,
   C as elementName
 };
-//# sourceMappingURL=cdMultivalues-DOIDUpuW.js.map
+//# sourceMappingURL=cdMultivalues-ZVrLMAMO.js.map
