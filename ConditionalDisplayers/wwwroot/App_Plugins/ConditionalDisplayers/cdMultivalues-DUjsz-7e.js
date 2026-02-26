@@ -1,6 +1,6 @@
 import { nothing as w, repeat as I, html as m, property as f, state as h, customElement as g } from "@umbraco-cms/backoffice/external/lit";
 import { UmbChangeEvent as _ } from "@umbraco-cms/backoffice/event";
-import { t as E } from "./backoffice-entrypoint-C77mwdyJ.js";
+import { t as E } from "./backoffice-entrypoint-ClCGYiLI.js";
 import { UmbLitElement as $ } from "@umbraco-cms/backoffice/lit-element";
 var k = Object.defineProperty, O = Object.getOwnPropertyDescriptor, d = (e) => {
   throw TypeError(e);
@@ -151,4 +151,4 @@ export {
   F as default,
   C as elementName
 };
-//# sourceMappingURL=cdMultivalues-Bx50K_Nz.js.map
+//# sourceMappingURL=cdMultivalues-DUjsz-7e.js.map

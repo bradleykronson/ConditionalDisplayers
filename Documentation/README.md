@@ -31,6 +31,34 @@ You'll have to create a list of options that the dropdown will display. In addit
 There's also a radio/checkbox-group datatype with the name '[Conditional] Radio Displayer'. Use **Selection type** to switch between classic radio behavior and checkbox-group behavior.
 
 
+### Value Displayer
+
+Create a new DataType and select '[Conditional] Value Displayer' as the Property Editor.
+
+This editor is invisible in the content UI and reads a value from either:
+
+- **Current property alias** (property on the same node)
+- **Parent property alias** (property on the parent item; takes priority when set)
+
+Then it matches that value against configured **Value mappings** (same structure as dropdown/radio items with `Value`, `Key`, `Show`, `Hide`) and applies visibility rules to properties, tabs and groups.
+
+Use this when you only need value-driven visibility logic and do not want to display an input control to editors.
+
+**Example (current node):**
+- Set **Current property alias** to `layoutMode`.
+- Add mapping `Value=Hero`, `Key=hero`, `Show=heroTitle,heroImage`, `Hide=videoUrl`.
+- Add mapping `Value=Video`, `Key=video`, `Show=videoUrl`, `Hide=heroTitle,heroImage`.
+
+Result: when `layoutMode` equals `hero`/`Hero`, hero fields are shown and video is hidden; when it equals `video`/`Video`, the reverse happens.
+
+**Example (parent node):**
+- Set **Parent property alias** to `parentDisplayMode` (this takes priority over Current property alias).
+- Add mapping `Value=SEO`, `Key=seo`, `Show=tab-seo,seoTitle,seoDescription`, `Hide=group-content/settingsSummary`.
+- Add mapping `Value=Content`, `Key=content`, `Show=tab-content-main,group-content/editor`, `Hide=tab-seo`.
+
+Result: the child node hides/shows tabs and groups from the parent value with no visible input rendered on the child.
+
+
 ## Step-by-step usage guide (same node + parent-driven child logic)
 
 This section shows exactly how to set up each Conditional Displayer editor and how to target:
