@@ -114,7 +114,7 @@ export abstract class CdElement extends UmbElementMixin(LitElement) {
     }
 
     private readParentPropertyValue(parentPropertyElement: HTMLElement): unknown {
-        const input = deepQuerySelectAll('input,select,textarea,uui-toggle,uui-checkbox', parentPropertyElement, true)[0] as
+        const input = deepQuerySelectAll('input,select,textarea,uui-select,uui-toggle,uui-checkbox', parentPropertyElement, true)[0] as
             | HTMLInputElement
             | HTMLSelectElement
             | HTMLTextAreaElement
