@@ -18,6 +18,7 @@ export class CdCheckboxElement extends CdElement {
         this.configDefaultValue = config.getValueByAlias(cdCheckboxPropertyInfo.default.alias);
         this.configShowIfChecked = config.getValueByAlias(cdCheckboxPropertyInfo.showIfChecked.alias);
         this.configShowIfUnchecked = config.getValueByAlias(cdCheckboxPropertyInfo.showIfUnchecked.alias);
+        this.configParentPropertyAlias = config.getValueByAlias(cdCheckboxPropertyInfo.parentPropertyAlias.alias);
         this.configIsShowLabels = config.getValueByAlias(cdCheckboxPropertyInfo.showLabels.alias);
         this.configLabelOn = config.getValueByAlias(cdCheckboxPropertyInfo.labelOn.alias);
         this.configLabelOff = config.getValueByAlias(cdCheckboxPropertyInfo.labelOff.alias);
@@ -31,6 +32,9 @@ export class CdCheckboxElement extends CdElement {
 
     @state()
     private configShowIfUnchecked?: string;
+
+    @state()
+    private configParentPropertyAlias?: string;
 
     @state()
     private configIsShowLabels?: boolean;
@@ -81,11 +85,27 @@ export class CdCheckboxElement extends CdElement {
     }
 
     protected override runDisplayLogic() {
-        if (this.toggleValue) {
+        const sourceValue = this.configParentPropertyAlias
+            ? this.getParentPropertyValue(this.configParentPropertyAlias)
+            : this.toggleValue;
+
+        const isChecked = this.toBool(sourceValue);
+
+        if (isChecked) {
             this.displayProps(this.configShowIfChecked!, this.configShowIfUnchecked!);
         } else {
             this.displayProps(this.configShowIfUnchecked!, this.configShowIfChecked!);
         }
+    }
+
+    private toBool(x: unknown): boolean {
+        if (typeof x === "boolean") return x;
+        if (typeof x === "number") return x === 1;
+        if (typeof x === "string") {
+            const s = x.trim().toLowerCase();
+            return s === "1" || s === "true" || s === "yes" || s === "on";
+        }
+        return false;
     }
 
     #onChange(event: UUIBooleanInputEvent) {

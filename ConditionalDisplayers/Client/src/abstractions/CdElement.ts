@@ -1,6 +1,6 @@
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import { LitElement, PropertyValues } from "lit";
-import { toggleElements } from "../sharedLogic";
+import { deepQuerySelectAll, toggleElements } from "../sharedLogic";
 import style from '../cd.css';
 import { UMB_PROPERTY_DATASET_CONTEXT } from "@umbraco-cms/backoffice/property";
 
@@ -38,65 +38,69 @@ export abstract class CdElement extends UmbElementMixin(LitElement) {
             return;
         }
 
-        // local node targets
-        toggleElements(showAliases, true, this.datasetHostElement, 'self');
-        toggleElements(hideAliases, false, this.datasetHostElement, 'self');
-
-        // parent node targets
-        const parentHostElement = this.findParentHostElement(this.datasetHostElement);
-        if (parentHostElement) {
-            toggleElements(showAliases, true, parentHostElement, 'parent');
-            toggleElements(hideAliases, false, parentHostElement, 'parent');
-        }
+        toggleElements(showAliases, true, this.datasetHostElement);
+        toggleElements(hideAliases, false, this.datasetHostElement);
     }
 
-    private findParentHostElement(currentHostElement: HTMLElement): HTMLElement | undefined {
-        const parentDataset = this.findAncestorAcrossShadow(currentHostElement, (el) => {
-            return el.tagName.toLowerCase() === 'umb-property-dataset';
-        });
-
-        if (parentDataset) {
-            const parentHost = this.findAncestorAcrossShadow(parentDataset, (el) => {
-                return el.tagName.toLowerCase() === 'umb-property-dataset';
-            });
-
-            if (parentHost) {
-                return parentHost;
-            }
-        }
-
-        // Fallback to document body so parent-scoped selectors still work if dataset ancestry is not available.
-        return document.body;
-    }
-
-    private findAncestorAcrossShadow(start: HTMLElement, predicate: (el: HTMLElement) => boolean): HTMLElement | undefined {
-        let current: Node | null = start;
-
-        while (current) {
-            const parentEl: HTMLElement | null = (current as HTMLElement).parentElement as HTMLElement | null;
-            if (parentEl) {
-                if (predicate(parentEl)) {
-                    return parentEl;
-                }
-
-                current = parentEl;
-                continue;
-            }
-
-            const root = (current as HTMLElement).getRootNode?.();
-            if (root instanceof ShadowRoot) {
-                const host = root.host as HTMLElement;
-                if (predicate(host)) {
-                    return host;
-                }
-
-                current = host;
-                continue;
-            }
-
+    protected getParentPropertyValue(parentPropertyAlias?: string): unknown {
+        if (!parentPropertyAlias) {
             return undefined;
+        }
+
+        const parentProperty = this.findNearestParentProperty(parentPropertyAlias);
+        if (!parentProperty) {
+            return undefined;
+        }
+
+        return this.readParentPropertyValue(parentProperty);
+    }
+
+    private findNearestParentProperty(parentPropertyAlias: string): HTMLElement | undefined {
+        const selector = `umb-property[data-mark="property:${parentPropertyAlias}"]`;
+        const allMatching = deepQuerySelectAll(selector, document.body, false);
+
+        if (!allMatching.length) {
+            return undefined;
+        }
+
+        const currentRect = this.getBoundingClientRect();
+        let bestMatch: HTMLElement | undefined;
+        let bestDistance = Number.MAX_SAFE_INTEGER;
+
+        for (const candidate of allMatching) {
+            const candidateRect = candidate.getBoundingClientRect();
+            const distance = Math.abs(currentRect.top - candidateRect.top);
+
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                bestMatch = candidate;
+            }
+        }
+
+        return bestMatch;
+    }
+
+    private readParentPropertyValue(parentPropertyElement: HTMLElement): unknown {
+        const input = deepQuerySelectAll('input,select,textarea,uui-toggle,uui-checkbox', parentPropertyElement, true)[0] as
+            | HTMLInputElement
+            | HTMLSelectElement
+            | HTMLTextAreaElement
+            | HTMLElement
+            | undefined;
+
+        if (!input) {
+            return undefined;
+        }
+
+        if ('checked' in input) {
+            return (input as HTMLInputElement & { checked?: boolean }).checked;
+        }
+
+        if ('value' in input) {
+            return (input as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement).value;
         }
 
         return undefined;
     }
+
 }
