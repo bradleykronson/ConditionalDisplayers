@@ -1,7 +1,7 @@
 import { html as h, property as c, state as p, customElement as m } from "@umbraco-cms/backoffice/external/lit";
 import { UmbChangeEvent as g } from "@umbraco-cms/backoffice/event";
-import { t as y, d as u } from "./backoffice-entrypoint-ClCGYiLI.js";
-import { C as f } from "./CdElement-DKD-IAYP.js";
+import { t as y, d as u } from "./backoffice-entrypoint-B-mc7huv.js";
+import { C as f } from "./CdElement-DHoHPUU2.js";
 var d = Object.defineProperty, P = Object.getOwnPropertyDescriptor, n = (e, t, r, a) => {
   for (var s = a > 1 ? void 0 : a ? P(t, r) : t, o = e.length - 1, l; o >= 0; o--)
     (l = e[o]) && (s = (a ? l(t, r, s) : l(s)) || s);
@@ -65,4 +65,4 @@ export {
   b as default,
   v as elementName
 };
-//# sourceMappingURL=index-CVBUeDuj.js.map
+//# sourceMappingURL=index-p49Q4-ld.js.map

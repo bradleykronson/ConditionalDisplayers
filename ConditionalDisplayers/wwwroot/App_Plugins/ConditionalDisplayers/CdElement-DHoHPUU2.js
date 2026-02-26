@@ -684,7 +684,7 @@ const F = class F extends mt(x) {
     return n;
   }
   readParentPropertyValue(e) {
-    const s = H("input,select,textarea,uui-toggle,uui-checkbox", e, !0)[0];
+    const s = H("input,select,textarea,uui-select,uui-toggle,uui-checkbox", e, !0)[0];
     if (s) {
       if ("checked" in s)
         return s.checked;
@@ -700,4 +700,4 @@ let at = F;
 export {
   at as C
 };
-//# sourceMappingURL=CdElement-DKD-IAYP.js.map
+//# sourceMappingURL=CdElement-DHoHPUU2.js.map
