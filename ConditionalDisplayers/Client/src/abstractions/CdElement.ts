@@ -55,6 +55,39 @@ export abstract class CdElement extends UmbElementMixin(LitElement) {
         return this.readParentPropertyValue(parentProperty);
     }
 
+    protected getCurrentPropertyValue(propertyAlias?: string): unknown {
+        if (!propertyAlias) {
+            return undefined;
+        }
+
+        const selector = `umb-property[data-mark="property:${propertyAlias}"]`;
+        const matching = deepQuerySelectAll(selector, document.body, false);
+
+        if (!matching.length) {
+            return undefined;
+        }
+
+        const currentRect = this.getBoundingClientRect();
+        let bestMatch: HTMLElement | undefined;
+        let bestDistance = Number.MAX_SAFE_INTEGER;
+
+        for (const candidate of matching) {
+            const candidateRect = candidate.getBoundingClientRect();
+            const distance = Math.abs(currentRect.top - candidateRect.top);
+
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                bestMatch = candidate;
+            }
+        }
+
+        if (!bestMatch) {
+            return undefined;
+        }
+
+        return this.readParentPropertyValue(bestMatch);
+    }
+
     private findNearestParentProperty(parentPropertyAlias: string): HTMLElement | undefined {
         const selector = `umb-property[data-mark="property:${parentPropertyAlias}"]`;
         const allMatching = deepQuerySelectAll(selector, document.body, false);

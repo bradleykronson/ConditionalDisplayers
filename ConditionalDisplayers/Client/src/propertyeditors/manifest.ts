@@ -1,7 +1,11 @@
 import { PropertyEditorSettingsProperty } from "@umbraco-cms/backoffice/property-editor";
-import { elementName as cdCheckboxElementName } from './checkbox'
-import { elementName as cdRadioElementName } from './radio'
-import { elementName as cdDropdownFlexibleElementName } from './dropdown'
+import { tagPrefix } from '../constants';
+
+
+const cdCheckboxElementName = `${tagPrefix}-checkbox`;
+const cdRadioElementName = `${tagPrefix}-radio`;
+const cdDropdownFlexibleElementName = `${tagPrefix}-dropdown`;
+const cdValueDisplayerElementName = `${tagPrefix}-value-displayer`;
 
 export const cdCheckboxPropertyInfo = {
     default: {
@@ -136,10 +140,24 @@ export const cdDropdownFlexiblePropertyInfo = {
         alias: "parentPropertyAlias",
         propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
     }
-,
+} satisfies Record<string, PropertyEditorSettingsProperty & { value?: any }>;
+
+export const cdValueDisplayerPropertyInfo = {
+    items: {
+        label: "Value mappings",
+        description: "Add, remove or sort values for the conditional mapping.<br />Each item can show/hide aliases, tabs and groups.<br />*Multiple targets must be comma separated.*",
+        alias: "items",
+        propertyEditorUiAlias: "Our.Umbraco.CdMultivalues",
+    },
+    sourcePropertyAlias: {
+        label: "Current property alias",
+        description: "Optional. Alias of a property on the current node to observe.",
+        alias: "sourcePropertyAlias",
+        propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
+    },
     parentPropertyAlias: {
         label: "Parent property alias",
-        description: "Optional. Use a parent property value to drive this displayer on the child node.",
+        description: "Optional. Alias of a property on the parent node to observe. Takes priority over Current property alias.",
         alias: "parentPropertyAlias",
         propertyEditorUiAlias: "Umb.PropertyEditorUi.TextBox"
     }
@@ -148,9 +166,9 @@ export const cdDropdownFlexiblePropertyInfo = {
 const cdCheckboxProperties: Array<PropertyEditorSettingsProperty & { value?: any }> = Object.keys(cdCheckboxPropertyInfo).map(x => (cdCheckboxPropertyInfo as unknown as Record<string, PropertyEditorSettingsProperty & { value?: any }>)[x]);
 const cdRadioProperties: Array<PropertyEditorSettingsProperty & { value?: any }> = Object.keys(cdRadioPropertyInfo).map(x => (cdRadioPropertyInfo as unknown as Record<string, PropertyEditorSettingsProperty & { value?: any }>)[x]);
 const cdDropdownFlexibleProperties: Array<PropertyEditorSettingsProperty & { value?: any }> = Object.keys(cdDropdownFlexiblePropertyInfo).map(x => (cdDropdownFlexiblePropertyInfo as unknown as Record<string, PropertyEditorSettingsProperty & { value?: any }>)[x]);
+const cdValueDisplayerProperties: Array<PropertyEditorSettingsProperty & { value?: any }> = Object.keys(cdValueDisplayerPropertyInfo).map(x => (cdValueDisplayerPropertyInfo as unknown as Record<string, PropertyEditorSettingsProperty & { value?: any }>)[x]);
 
 export const manifests: Array<UmbExtensionManifest> = [
-    // custom view for prevalues (will not be displayed in backoffice)
     {
         type: "propertyEditorUi",
         alias: "Our.Umbraco.CdMultivalues",
@@ -162,7 +180,6 @@ export const manifests: Array<UmbExtensionManifest> = [
             group: "common",
         },
     },
-    // Conditional Checkbox
     {
         type: "propertyEditorUi",
         alias: "Our.Umbraco.CdCheckbox",
@@ -179,7 +196,6 @@ export const manifests: Array<UmbExtensionManifest> = [
             }
         },
     },
-    // Conditional Radio
     {
         type: "propertyEditorUi",
         alias: "Our.Umbraco.CdRadio",
@@ -206,7 +222,6 @@ export const manifests: Array<UmbExtensionManifest> = [
             }
         },
     },
-    // Conditional Dropdown
     {
         type: "propertyEditorUi",
         alias: "Our.Umbraco.CdDropdownFlexible",
@@ -220,6 +235,22 @@ export const manifests: Array<UmbExtensionManifest> = [
             propertyEditorSchemaAlias: "Umbraco.Plain.String",
             settings: {
                 properties: cdDropdownFlexibleProperties
+            }
+        },
+    },
+    {
+        type: "propertyEditorUi",
+        alias: "Our.Umbraco.CdValueDisplayer",
+        name: "[Conditional] Value Displayer",
+        element: () => import("./value-displayer"),
+        elementName: cdValueDisplayerElementName,
+        meta: {
+            label: "[Conditional] Value Displayer",
+            icon: "icon-eye",
+            group: "Conditional Displayers",
+            propertyEditorSchemaAlias: "Umbraco.Plain.String",
+            settings: {
+                properties: cdValueDisplayerProperties
             }
         },
     }

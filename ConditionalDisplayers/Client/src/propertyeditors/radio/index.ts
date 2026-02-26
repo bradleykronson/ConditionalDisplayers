@@ -45,6 +45,8 @@ export class CdRadioElement extends CdElement {
     @state()
     private configAsButton?: boolean;
 
+    private selectedItem?: CdMultiValueModelDto;
+
     #__selectedValue: string = "";
     @state()
     public get selectedValue() {
@@ -55,6 +57,7 @@ export class CdRadioElement extends CdElement {
             throw new Error("value not set");
         }
         this.#__selectedValue = newValue;
+        this.selectedItem = this.availableValues.find(x => x.value === newValue || x.key === newValue);
         this.value = newValue;
         this.dispatchEvent(new UmbChangeEvent());
     }
@@ -126,6 +129,7 @@ export class CdRadioElement extends CdElement {
         this.configItems = config.getValueByAlias(cdRadioPropertyInfo.items.alias);
         this.configDefaultValue = config.getValueByAlias(cdRadioPropertyInfo.default.alias);
         this.configParentPropertyAlias = config.getValueByAlias(cdRadioPropertyInfo.parentPropertyAlias.alias);
+        this.configSelectionType = config.getValueByAlias(cdRadioPropertyInfo.selectionType.alias) ?? "Radio";
         this.configAlignHorizontal = config.getValueByAlias(cdRadioPropertyInfo.alignHrz.alias);
         this.configLabelPosition = config.getValueByAlias(cdRadioPropertyInfo.labelsPos.alias);
         this.configAsButton = config.getValueByAlias(cdRadioPropertyInfo.asBtn.alias);
@@ -135,6 +139,30 @@ export class CdRadioElement extends CdElement {
 
     private isValidSelection(value: string): boolean {
         return !!this.availableValues.find(x => x.value === value || x.key === value);
+    }
+
+
+    private parseMultiValue(value: string): Array<string> {
+        return value
+            .split(',')
+            .map(x => x.trim())
+            .filter(x => !!x);
+    }
+
+    private runCheckboxGroupDisplayLogic() {
+        const selectedValues = this.configParentPropertyAlias
+            ? this.parseMultiValue(String(this.getParentPropertyValue(this.configParentPropertyAlias) ?? ""))
+            : this.selectedValues;
+
+        const selectedItems = this.availableValues.filter(x => selectedValues.includes(x.value) || selectedValues.includes(x.key));
+
+        if (!selectedItems.length) {
+            return;
+        }
+
+        const showAliases = selectedItems.map(x => x.show).filter(x => !!x).join(',');
+        const hideAliases = selectedItems.map(x => x.hide).filter(x => !!x).join(',');
+        this.displayProps(showAliases, hideAliases);
     }
 
     #onChange(event: UUIBooleanInputEvent) {
