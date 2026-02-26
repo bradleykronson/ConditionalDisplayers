@@ -244,7 +244,7 @@ Examples:
 This gives you a clean setup where parent data controls what is visible on child properties.
 
 ## Tabs and Groups
-The previous documentation talks about *property names* to configure the editors, but you can also configure them to show or hide tabs and groups. [Jump to the extended documentation.](tabs-and-groups)
+The previous documentation talks about *property names* to configure the editors, but you can also configure them to show or hide tabs and groups. [Jump to the extended documentation.](tabs-and-groups.md)
 
 
 ## Getting the values on the templates
